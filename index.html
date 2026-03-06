@@ -1,113 +1,61 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pong</title>
-    <style>
-        body {
-            margin: 0;
-            background: #111;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pong</title>
 
-        #startScreen {
-            position: absolute;
-            inset: 0;
-            background: #111;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            z-index: 10;
-        }
+<link rel="stylesheet" href="style.css">
 
-        .inputRow {
-            display: flex;
-            flex-direction: column;
-            font-size: 20px;
-        }
-
-        input {
-            padding: 8px;
-            border-radius: 6px;
-            border: none;
-            font-size: 20px;
-            margin-top: 5px;
-        }
-
-        button {
-            padding: 12px 25px;
-            border: none;
-            background: #4ade80;
-            color: #000;
-            border-radius: 8px;
-            font-size: 20px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .colorRow {
-            display: flex;
-            gap: 10px;
-        }
-
-        .colorBox {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 3px solid white;
-        }
-
-        canvas {
-            position: absolute;
-            inset: 0;
-            background: black;
-        }
-    </style>
 </head>
 
 <body>
 
 <div id="startScreen">
-    <div class="inputRow">
-        <label>Spelare 1:</label>
-        <input id="p1name" placeholder="Namn..." />
-    </div>
 
-    <div class="inputRow">
-        <label>Spelare 2:</label>
-        <input id="p2name" placeholder="Namn..." />
-    </div>
+<div class="inputRow">
+<label>Spelare 1:</label>
+<input id="p1name" placeholder="Namn...">
+</div>
 
-    <div class="inputRow">
-        <label>Välj färgtema:</label>
-        <div class="colorRow">
-            <div class="colorBox" style="background:#4ade80" data-color="#4ade80"></div>
-            <div class="colorBox" style="background:#60a5fa" data-color="#60a5fa"></div>
-            <div class="colorBox" style="background:#f472b6" data-color="#f472b6"></div>
-            <div class="colorBox" style="background:#fb923c" data-color="#fb923c"></div>
-        </div>
-    </div>
+<div class="inputRow">
+<label>Spelare 2:</label>
+<input id="p2name" placeholder="Namn...">
+</div>
 
-    <div class="inputRow">
-        <label>Svårighet:</label>
-        <select id="difficulty" style="padding:8px; font-size:20px; border-radius:6px;">
-            <option value="easy">Easy</option>
-            <option value="medium">Intermediate</option>
-            <option value="hard">Hard</option>
-        </select>
-    </div>
+<div class="inputRow">
+<label>Välj färgtema:</label>
 
-    <button onclick="startGame()">Starta spelet</button>
+<div class="colorRow">
+
+<div class="colorBox" style="background:#4ade80" data-color="#4ade80"></div>
+<div class="colorBox" style="background:#60a5fa" data-color="#60a5fa"></div>
+<div class="colorBox" style="background:#f472b6" data-color="#f472b6"></div>
+<div class="colorBox" style="background:#fb923c" data-color="#fb923c"></div>
+
+</div>
+</div>
+
+<div class="inputRow">
+<label>Svårighet:</label>
+
+<select id="difficulty">
+
+<option value="easy">Easy</option>
+<option value="medium">Intermediate</option>
+<option value="hard">Hard</option>
+
+</select>
+
+</div>
+
+<button onclick="startGame()">Starta spelet</button>
+
 </div>
 
 <canvas id="gameCanvas"></canvas>
 
 <script src="game.js"></script>
+
 </body>
 </html>
