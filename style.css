@@ -1,46 +1,89 @@
-body {
-    margin: 0;
-    background: #000;
-    font-family: Arial, sans-serif;
-    overflow: hidden;
+body{
+margin:0;
+background:#111;
+font-family:Arial;
+overflow:hidden;
 }
 
-#menu {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #111;
-    padding: 20px;
-    width: 80%;
-    max-width: 350px;
-    color: white;
-    text-align: center;
-    border-radius: 10px;
+#startScreen{
+
+position:absolute;
+inset:0;
+
+background:#111;
+
+display:flex;
+flex-direction:column;
+
+align-items:center;
+justify-content:center;
+
+gap:20px;
+
+color:white;
+
+z-index:10;
 }
 
-#menu h1 { margin-bottom: 10px; }
+.inputRow{
 
-#menu input, #menu select {
-    width: 90%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    border: none;
+display:flex;
+flex-direction:column;
+font-size:20px;
+
 }
 
-#startBtn {
-    width: 100%;
-    padding: 12px;
-    background: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 18px;
+input{
+
+padding:8px;
+border-radius:6px;
+border:none;
+font-size:20px;
+margin-top:5px;
+
 }
 
-canvas {
-    display: none;
-    background: black;
-    touch-action: none; /* viktigt för mobilen */
+button{
+
+padding:12px 25px;
+border:none;
+background:#4ade80;
+
+color:black;
+
+border-radius:8px;
+
+font-size:20px;
+cursor:pointer;
+
+font-weight:bold;
+
+}
+
+.colorRow{
+
+display:flex;
+gap:10px;
+
+}
+
+.colorBox{
+
+width:35px;
+height:35px;
+
+border-radius:50%;
+
+cursor:pointer;
+
+border:3px solid white;
+
+}
+
+canvas{
+
+position:absolute;
+inset:0;
+background:black;
+
 }
