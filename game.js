@@ -1,183 +1,246 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-let WIDTH, HEIGHT;
-function resizeCanvas() {
-    WIDTH = window.innerWidth;
-    HEIGHT = window.innerHeight;
-    canvas.width = WIDTH;
-    canvas.height = HEIGHT;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let paddleWidth = 15;
+let paddleHeight;
+
+let ballRadius = 10;
+
+let paddle1Y;
+let paddle2Y;
+
+let ballX;
+let ballY;
+
+let ballDX;
+let ballDY;
+
+let ballSpeed;
+
+let score1 = 0;
+let score2 = 0;
+
+let player1Name="Spelare 1";
+let player2Name="Spelare 2";
+
+let themeColor="#4ade80";
+
+let gameRunning=false;
+
+const pingSound=new Audio("sounds/pingpong.wav");
+const missSound=new Audio("sounds/miss.wav");
+const gameOverSound=new Audio("sounds/gameover.wav");
+
+
+function startGame(){
+
+player1Name=document.getElementById("p1name").value || "Spelare 1";
+player2Name=document.getElementById("p2name").value || "Spelare 2";
+
+const difficulty=document.getElementById("difficulty").value;
+
+if(difficulty==="easy"){
+
+paddleHeight=canvas.height*0.25;
+ballSpeed=4;
+
 }
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
 
-// ---------------------
-// SPELVARIABLER
-// ---------------------
-let p1Name = "";
-let p2Name = "";
-let themeColor = "#4ade80";
-let difficulty = "easy";
-let gameRunning = false;
+else if(difficulty==="medium"){
 
-let paddleWidth = 20;
-let paddleHeight = 120;
+paddleHeight=canvas.height*0.18;
+ballSpeed=6;
 
-let p1 = { x: 20, y: 0, score: 0 };
-let p2 = { x: 0, y: 0, score: 0 };
+}
 
-let ball = { x: 0, y: 0, radius: 15, dx: 6, dy: 6 };
+else{
 
-// ---------------------
-// Ljud
-// ---------------------
-let soundPing = new Audio("pingpong.wav");
-let soundMiss = new Audio("miss.wav");
-let soundGameOver = new Audio("gameover.wav");
+paddleHeight=canvas.height*0.12;
+ballSpeed=8;
 
-// ---------------------
-// TOUCH Kontroll
-// ---------------------
-let touchP1 = null;
-let touchP2 = null;
+}
 
-canvas.addEventListener("touchstart", e => {
-    [...e.changedTouches].forEach(t => {
-        if (t.clientX < WIDTH / 2) touchP1 = t;
-        else touchP2 = t;
-    });
+document.querySelectorAll(".colorBox").forEach(box=>{
+
+box.addEventListener("click",()=>{
+
+themeColor=box.dataset.color;
+
 });
 
-canvas.addEventListener("touchmove", e => {
-    e.preventDefault();
-    [...e.changedTouches].forEach(t => {
-        if (touchP1 && t.identifier === touchP1.identifier) {
-            p1.y = t.clientY - paddleHeight / 2;
-        }
-        if (touchP2 && t.identifier === touchP2.identifier) {
-            p2.y = t.clientY - paddleHeight / 2;
-        }
-    });
-}, { passive: false });
-
-canvas.addEventListener("touchend", e => {
-    [...e.changedTouches].forEach(t => {
-        if (touchP1 && t.identifier === touchP1.identifier) touchP1 = null;
-        if (touchP2 && t.identifier === touchP2.identifier) touchP2 = null;
-    });
 });
 
-// ---------------------
-// Starta spelet
-// ---------------------
-function startGame() {
-    p1Name = document.getElementById("p1name").value || "Player 1";
-    p2Name = document.getElementById("p2name").value || "Player 2";
+paddle1Y=canvas.height/2-paddleHeight/2;
+paddle2Y=canvas.height/2-paddleHeight/2;
 
-    difficulty = document.getElementById("difficulty").value;
+resetBall();
 
-    let colors = document.querySelectorAll(".colorBox");
-    colors.forEach(c => c.addEventListener("click", () => {
-        themeColor = c.dataset.color;
-    }));
+document.getElementById("startScreen").style.display="none";
 
-    document.getElementById("startScreen").style.display = "none";
+gameRunning=true;
 
-    resetPositions();
-    gameRunning = true;
-    gameLoop();
+gameLoop();
+
 }
 
-// ---------------------
-function resetPositions() {
-    p1.y = HEIGHT / 2 - paddleHeight / 2;
-    p2.y = HEIGHT / 2 - paddleHeight / 2;
-    p2.x = WIDTH - 40;
 
-    ball.x = WIDTH / 2;
-    ball.y = HEIGHT / 2;
+function resetBall(){
 
-    let speed = difficulty === "easy" ? 6 :
-                difficulty === "medium" ? 8 : 11;
+ballX=canvas.width/2;
+ballY=canvas.height/2;
 
-    ball.dx = speed * (Math.random() > 0.5 ? 1 : -1);
-    ball.dy = speed * (Math.random() > 0.5 ? 1 : -1);
+ballDX=(Math.random()>0.5?1:-1)*ballSpeed;
+ballDY=(Math.random()>0.5?1:-1)*ballSpeed;
+
 }
 
-// ---------------------
-// GAME LOOP
-// ---------------------
-function gameLoop() {
-    if (!gameRunning) return;
 
-    update();
-    draw();
+function clampPaddles(){
 
-    requestAnimationFrame(gameLoop);
+if(paddle1Y<0)paddle1Y=0;
+
+if(paddle1Y+paddleHeight>canvas.height)
+paddle1Y=canvas.height-paddleHeight;
+
+if(paddle2Y<0)paddle2Y=0;
+
+if(paddle2Y+paddleHeight>canvas.height)
+paddle2Y=canvas.height-paddleHeight;
+
 }
 
-function update() {
-    ball.x += ball.dx;
-    ball.y += ball.dy;
 
-    // Väggar
-    if (ball.y < 0 || ball.y > HEIGHT) ball.dy *= -1;
+function update(){
 
-    // Paddelträffar
-    if (
-        ball.x - ball.radius < p1.x + paddleWidth &&
-        ball.y > p1.y &&
-        ball.y < p1.y + paddleHeight
-    ) {
-        ball.dx *= -1;
-        soundPing.play();
-    }
+ballX+=ballDX;
+ballY+=ballDY;
 
-    if (
-        ball.x + ball.radius > p2.x &&
-        ball.y > p2.y &&
-        ball.y < p2.y + paddleHeight
-    ) {
-        ball.dx *= -1;
-        soundPing.play();
-    }
+if(ballY+ballRadius>canvas.height || ballY-ballRadius<0){
 
-    // MISS
-    if (ball.x < 0) {
-        p2.score++;
-        soundMiss.play();
-        resetPositions();
-    }
+ballDY*=-1;
 
-    if (ball.x > WIDTH) {
-        p1.score++;
-        soundMiss.play();
-        resetPositions();
-    }
 }
 
-function draw() {
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+if(ballX-ballRadius<paddleWidth && ballY>paddle1Y && ballY<paddle1Y+paddleHeight){
 
-    // mittlinje
-    ctx.fillStyle = "#333";
-    for (let y = 0; y < HEIGHT; y += 40) {
-        ctx.fillRect(WIDTH / 2 - 3, y, 6, 20);
-    }
+ballDX*=-1;
+pingSound.play();
 
-    // paddlar
-    ctx.fillStyle = themeColor;
-    ctx.fillRect(p1.x, p1.y, paddleWidth, paddleHeight);
-    ctx.fillRect(p2.x, p2.y, paddleWidth, paddleHeight);
-
-    // boll (rund!)
-    ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-    ctx.fill();
-
-    // poäng
-    ctx.fillStyle = "white";
-    ctx.font = "28px Arial";
-    ctx.fillText(`${p1Name}: ${p1.score}`, 40, 40);
-    ctx.fillText(`${p2Name}: ${p2.score}`, WIDTH - 200, 40);
 }
+
+if(ballX+ballRadius>canvas.width-paddleWidth && ballY>paddle2Y && ballY<paddle2Y+paddleHeight){
+
+ballDX*=-1;
+pingSound.play();
+
+}
+
+if(ballX<0){
+
+score2++;
+missSound.play();
+resetBall();
+
+}
+
+if(ballX>canvas.width){
+
+score1++;
+missSound.play();
+resetBall();
+
+}
+
+if(score1===5 || score2===5){
+
+gameRunning=false;
+
+gameOverSound.play();
+
+setTimeout(()=>{
+
+location.reload();
+
+},3000);
+
+}
+
+clampPaddles();
+
+}
+
+
+function drawRect(x,y,w,h,color){
+
+ctx.fillStyle=color;
+ctx.fillRect(x,y,w,h);
+
+}
+
+
+function drawBall(){
+
+ctx.fillStyle=themeColor;
+
+ctx.beginPath();
+ctx.arc(ballX,ballY,ballRadius,0,Math.PI*2);
+ctx.fill();
+
+}
+
+
+function drawText(text,x,y){
+
+ctx.fillStyle="white";
+ctx.font="28px Arial";
+
+ctx.fillText(text,x,y);
+
+}
+
+
+function draw(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+drawRect(0,paddle1Y,paddleWidth,paddleHeight,themeColor);
+drawRect(canvas.width-paddleWidth,paddle2Y,paddleWidth,paddleHeight,themeColor);
+
+drawBall();
+
+drawText(player1Name+": "+score1,50,50);
+drawText(player2Name+": "+score2,canvas.width-250,50);
+
+}
+
+
+function gameLoop(){
+
+if(!gameRunning)return;
+
+update();
+draw();
+
+requestAnimationFrame(gameLoop);
+
+}
+
+
+document.addEventListener("mousemove",(e)=>{
+
+paddle1Y=e.clientY-paddleHeight/2;
+
+});
+
+
+document.addEventListener("keydown",(e)=>{
+
+const speed=25;
+
+if(e.key==="ArrowUp")paddle2Y-=speed;
+if(e.key==="ArrowDown")paddle2Y+=speed;
+
+});
