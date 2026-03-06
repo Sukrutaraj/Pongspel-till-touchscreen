@@ -34,7 +34,6 @@ const pingSound=new Audio("sounds/pingpong.wav");
 const missSound=new Audio("sounds/miss.wav");
 const gameOverSound=new Audio("sounds/gameover.wav");
 
-
 function startGame(){
 
 player1Name=document.getElementById("p1name").value || "Spelare 1";
@@ -86,7 +85,6 @@ gameLoop();
 
 }
 
-
 function resetBall(){
 
 ballX=canvas.width/2;
@@ -96,7 +94,6 @@ ballDX=(Math.random()>0.5?1:-1)*ballSpeed;
 ballDY=(Math.random()>0.5?1:-1)*ballSpeed;
 
 }
-
 
 function clampPaddles(){
 
@@ -111,7 +108,6 @@ if(paddle2Y+paddleHeight>canvas.height)
 paddle2Y=canvas.height-paddleHeight;
 
 }
-
 
 function update(){
 
@@ -172,14 +168,12 @@ clampPaddles();
 
 }
 
-
 function drawRect(x,y,w,h,color){
 
 ctx.fillStyle=color;
 ctx.fillRect(x,y,w,h);
 
 }
-
 
 function drawBall(){
 
@@ -191,7 +185,6 @@ ctx.fill();
 
 }
 
-
 function drawText(text,x,y){
 
 ctx.fillStyle="white";
@@ -200,7 +193,6 @@ ctx.font="28px Arial";
 ctx.fillText(text,x,y);
 
 }
-
 
 function draw(){
 
@@ -216,7 +208,6 @@ drawText(player2Name+": "+score2,canvas.width-250,50);
 
 }
 
-
 function gameLoop(){
 
 if(!gameRunning)return;
@@ -228,19 +219,72 @@ requestAnimationFrame(gameLoop);
 
 }
 
+/* MUSSTYRNING */
 
-document.addEventListener("mousemove",(e)=>{
+canvas.addEventListener("mousemove",(e)=>{
 
-paddle1Y=e.clientY-paddleHeight/2;
+const rect=canvas.getBoundingClientRect();
+
+const x=e.clientX-rect.left;
+const y=e.clientY-rect.top;
+
+if(x<canvas.width/2){
+
+paddle1Y=y-paddleHeight/2;
+
+}else{
+
+paddle2Y=y-paddleHeight/2;
+
+}
 
 });
 
+/* TOUCHSTYRNING */
+
+canvas.addEventListener("touchmove",(e)=>{
+
+e.preventDefault();
+
+const rect=canvas.getBoundingClientRect();
+
+const touch=e.touches[0];
+
+const x=touch.clientX-rect.left;
+const y=touch.clientY-rect.top;
+
+if(x<canvas.width/2){
+
+paddle1Y=y-paddleHeight/2;
+
+}else{
+
+paddle2Y=y-paddleHeight/2;
+
+}
+
+});
+
+/* TANGENTBORD */
 
 document.addEventListener("keydown",(e)=>{
 
 const speed=25;
 
-if(e.key==="ArrowUp")paddle2Y-=speed;
-if(e.key==="ArrowDown")paddle2Y+=speed;
+switch(e.key){
+
+case "ArrowUp":
+case "w":
+case "W":
+paddle2Y-=speed;
+break;
+
+case "ArrowDown":
+case "s":
+case "S":
+paddle2Y+=speed;
+break;
+
+}
 
 });
